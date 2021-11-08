@@ -1,9 +1,14 @@
 import { gql, IResolvers, makeExecutableSchema } from 'apollo-server'
 
 const typeDefs = gql`
+  enum AgeMetric {
+    DAYS
+    YEARS
+  }
+
   type Person {
     name: String!
-    age: Int!
+    age(metric: AgeMetric = YEARS): Int!
   }
 
   type Query {
@@ -14,7 +19,12 @@ const typeDefs = gql`
 const resolvers: IResolvers = {
   Query: {
     peopleByName(_, { name }, { dataSources }) {
-      return dataSources.weatherAPI.peopleByName(name)
+      return dataSources.peopleAPI.peopleByName(name)
+    },
+  },
+  Person: {
+    age(person, { metric }, { dataSources }) {
+      return metric === 'YEARS' ? person.age : person.age * 365;
     },
   }
 }
