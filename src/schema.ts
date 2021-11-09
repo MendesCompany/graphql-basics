@@ -1,18 +1,15 @@
 import { gql, IResolvers, makeExecutableSchema } from 'apollo-server'
 
 const typeDefs = gql`
-  enum AgeMetric {
-    DAYS
-    YEARS
-  }
-
   type Person {
     name: String!
-    age(metric: AgeMetric = YEARS): Int!
+    age: Int!
+    overAge: Boolean!
   }
 
   type Query {
     peopleByName(name: String!): [Person]
+    allPeople: [Person]
   }
 `
 
@@ -21,10 +18,13 @@ const resolvers: IResolvers = {
     peopleByName(_, { name }, { dataSources }) {
       return dataSources.peopleAPI.peopleByName(name)
     },
+    allPeople(_, __, { dataSources }) {
+      return dataSources.peopleAPI.findAllPeople()
+    },
   },
   Person: {
-    age(person, { metric }, { dataSources }) {
-      return metric === 'YEARS' ? person.age : person.age * 365;
+    overAge(person, __, ___) {
+      return person.age > 18 ? true : false;
     },
   }
 }

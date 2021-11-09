@@ -6,6 +6,10 @@ export class PeopleAPI extends RESTDataSource {
   public async peopleByName(name: string) {
     return people.filter(p => p.name === name) || [];
   }
+
+  public async findAllPeople() {
+    return people || [];
+  }
 }
 
 export const dataSources = () => ({ peopleAPI: new PeopleAPI() })
